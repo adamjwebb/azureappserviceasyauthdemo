@@ -1,38 +1,47 @@
 # Example of leveraging EasyAuth in Azure App Service to call an API and delegate authorization
 
+The goal of this repo is to provide an example of how to delegate AzureAD authentication from a frontend React SPA app to a backend Python Flask app with minimal code by leveraging Azure App Service's EasyAuth capabilities.
 
--- vdvsd
+## Infrastructure Configuration
 
+### Create Frontend App
 
  1. Create an Azure Web App for the front end React app
  2. Enable authentication (EasyAuth) with AzureAD identity provider
-   1. Select "Authentication" and then "Add Idenity Provider"
-   2. Choose "Microsoft" as the Identity Provider
-   3. Settings:
-     1. App Registration Type : Create new app registration
-     2. Supported Account Types : Current tenant - Single tenant
-     3. Restrict Access : Require Authentication
-     4. Unauthenticated requests : HTTP 302 Found redirect: recommended for websites
-     5. Redirect to : Microsoft
-     6. Token Store : Enabled
-     7. Permissions : User.Read (default)
-   4. Select "Add"
+    1. Select "Authentication" and then "Add Idenity Provider"
+    2. Choose "Microsoft" as the Identity Provider
+    3. Settings:
+       1. App Registration Type : Create new app registration
+       2. Supported Account Types : Current tenant - Single tenant
+       3. Restrict Access : Require Authentication
+       4. Unauthenticated requests : HTTP 302 Found redirect: recommended for websites
+       5. Redirect to : Microsoft
+       6. Token Store : Enabled
+       7. Permissions : User.Read (default)
+    4. Select "Add"
    
-  
+ ### Create Backend App
+ 
  1. Create an Azure Web App for the back end Python Flask app
  2. Enable authentication (EasyAuth) with AzureAD identity provider
-   1. Select "Authentication" and then "Add Idenity Provider"
-   2. Choose "Microsoft" as the Identity Provider
-   3. Settings:
-     1. App Registration Type : Create new app registration
-     2. Supported Account Types : Current tenant - Single tenant
-     3. Restrict Access : Require Authentication
-     4. Unauthenticated requests : HTTP 401 Unauthorized: recommended for APIs
-     5. Redirect to : Microsoft
-     6. Token Store : Enabled
-     7. Permissions : User.Read (default)
- 4. Select "Add"
+    1. Select "Authentication" and then "Add Idenity Provider"
+    2. Choose "Microsoft" as the Identity Provider
+    3. Settings:
+       1. App Registration Type : Create new app registration
+       2. Supported Account Types : Current tenant - Single tenant
+       3. Restrict Access : Require Authentication
+       4. Unauthenticated requests : HTTP 401 Unauthorized: recommended for APIs
+       5. Redirect to : Microsoft
+       6. Token Store : Enabled
+       7. Permissions : User.Read (default)
+    4. Select "Add"
+ 3. Configure CORS for frontend app to access backend app
+     1. Select "CORS"
+     2. Add the FQDN of the frontend app e.g. https://frontendapp.azurewebsites.net
+     3. Click "Save"
 
+
+### Add backend app to the generated AzureAD access token for the frontend app
 
  1. Navigate to the backend app in the Azure Portal
  2. Select the Authentication configuration and copy the App (client) ID
@@ -48,52 +57,17 @@
         ],
 ```
 
+## Code deployment
 
+1. Deploy code in "frontend" repo folder to frontend app
+2. Deploy code in "backend" repo folder to backend app
 
- 
- 1. A numbered list
-       1. test
-       2. 
-              1. A nested numbered list
-              2. Which is numbered
- 
- 
- 
- 4.  ds
- 5.  
-   3.   test
- 4.   test
- 5. 
- 6. A numbered list
-              1. A nested numbered list
-              2. Which is numbered
-          2. Which is numbered
+## Confirm AzureAD authentication delegation from frontend to backend app
 
-
-
-The goal of this repo is to provide examples of how to automate the configuration of Azure Privileged Identity Management (PIM) Role Settings for Azure Resources.
-
-When assisting a customer with automating configuration of PIM role settings for Azure Resources, I struggled to locate any concrete examples or sample code. This was most likely due to the PIM APIs being in public preview.
-
-Documentation to configure the role settings manually for an Azure Resource can be located here.
-
-PowerShell
-Pre-requisites
-Latest version of the Azure Active Directory V2 Preview Module
-Discover and on-board Azure Subscription to PIM
-Azure Subscription Id
-Azure RBAC role Id e.g. Contributor is b24988ac-6180-42a0-ab88-20f7382dd24c
-Steps
-Ensure the pre-requisites are met
-Clone this repo or open the PowerShell file in an IDE e.g. Visual Studio Code or PowerShell ISE
-Replace the token with your Azure Subscription Id on line 7
-Run the commands in order
-Results
-The results of running through all the commands in the PowerShell file:
-
-Azure MFA will be required upon PIM role Activation for the Azure Contributor role
-Azure MFA will be required upon active assignment of the Azure Contributor role wthin PIM
-You can validate the above settings by opening the Azure Portal and navigating to Privileged Identity Management > Azure Resources > Azure Subscription > Settings > Contributor > Edit > Activation/Assignment
-
-References
-https://www.jasonfritts.me/2021/07/20/automating-azure-privileged-identity-management-pim-with-powershell https://docs.microsoft.com/en-us/powershell/module/azuread/?view=azureadps-2.0-preview#privileged-role-management
+1. Navigate to the frontend app URL in the browser
+2. When prompted, login to your AzureAD account
+3. Press F12 to open the browser developer tools and select "Console"
+4. You should see a console log, which is returned from the backend app, and includes:
+    1. X-MS-CLIENT-PRINCIPAL-IDP header (Identity Provider e.g. AAD)
+    2. X-MS-CLIENT-PRINCIPAL header (Encoded user claims)
+    3. X-MS-CLIENT-PRINCIPAL-NAME header (authenticated user email)
