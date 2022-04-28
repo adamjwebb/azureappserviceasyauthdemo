@@ -71,3 +71,5 @@ The goal of this repo is to provide an example of how to delegate AzureAD authen
     1. X-MS-CLIENT-PRINCIPAL-IDP header (Identity Provider e.g. AAD)
     2. X-MS-CLIENT-PRINCIPAL header (Encoded user claims)
     3. X-MS-CLIENT-PRINCIPAL-NAME header (authenticated user email)
+
+If you receive 401 unauthorized errors in the console log, please hit Ctrl + F5 to fully refresh the app. This may be due to the timing of the call to the backend app and the availability of the user access token.
