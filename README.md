@@ -27,12 +27,29 @@
      1. App Registration Type : Create new app registration
      2. Supported Account Types : Current tenant - Single tenant
      3. Restrict Access : Require Authentication
-     4. Unauthenticated requests : HTTP 302 Found redirect: recommended for websites
+     4. Unauthenticated requests : HTTP 401 Unauthorized: recommended for APIs
      5. Redirect to : Microsoft
      6. Token Store : Enabled
      7. Permissions : User.Read (default)
  4. Select "Add"
- 
+
+
+ 1. Navigate to the backend app in the Azure Portal
+ 2. Select the Authentication configuration and copy the App (client) ID
+ 3. Open https://resources.azure.com/ in the browser
+ 4. Locate the frontend web app, select config > authsettingsV2
+ 5. Navigate to properties > identityProviders > azureActiveDirectory > login
+ 6. Add the below configuration and save, ensuring to replace << backend app App ID >> with the copied App ID from the backend app
+
+```
+"loginParameters": [
+     "response_type=code id_token",
+     "scope=openid api://<< backend app App ID >>/user_impersonation"
+        ],
+```
+
+
+
  
  1. A numbered list
        1. test
